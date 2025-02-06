@@ -18,12 +18,18 @@ export const products = pgTable("products", {
   stock: integer("stock").notNull().default(0),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
+// Create insert schemas
+export const insertUserSchema = createInsertSchema(users, {
+  id: z.number().optional(),
+  isAdmin: z.boolean().optional(),
+}).pick({
   username: true,
   password: true,
 });
 
-export const insertProductSchema = createInsertSchema(products).pick({
+export const insertProductSchema = createInsertSchema(products, {
+  id: z.number().optional(),
+}).pick({
   name: true,
   description: true,
   price: true,
@@ -31,6 +37,7 @@ export const insertProductSchema = createInsertSchema(products).pick({
   stock: true,
 });
 
+// Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Product = typeof products.$inferSelect;

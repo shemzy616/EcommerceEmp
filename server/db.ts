@@ -12,4 +12,19 @@ if (!process.env.DATABASE_URL) {
 }
 
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(pool, { schema });
+
+// Test the connection immediately and log the result
+pool.connect()
+  .then(() => {
+    console.log('Database connected successfully');
+    // Test query to verify schema
+    return db.select().from(schema.users).execute();
+  })
+  .then(() => {
+    console.log('Database schema verified successfully');
+  })
+  .catch((err) => {
+    console.error('Database connection/schema error:', err);
+    process.exit(1);
+  });
