@@ -19,23 +19,24 @@ export const products = pgTable("products", {
 });
 
 // Create insert schemas
-export const insertUserSchema = createInsertSchema(users, {
-  id: z.number().optional(),
-  isAdmin: z.boolean().optional(),
-}).pick({
-  username: true,
-  password: true,
-});
+export const insertUserSchema = createInsertSchema(users)
+  .pick({
+    username: true,
+    password: true,
+  })
+  .extend({
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
 
-export const insertProductSchema = createInsertSchema(products, {
-  id: z.number().optional(),
-}).pick({
-  name: true,
-  description: true,
-  price: true,
-  imageUrl: true,
-  stock: true,
-});
+export const insertProductSchema = createInsertSchema(products)
+  .pick({
+    name: true,
+    description: true,
+    price: true,
+    imageUrl: true,
+    stock: true,
+  });
 
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Redirect } from "wouter";
 import { Store, Lock } from "lucide-react";
@@ -14,12 +14,20 @@ import { Store, Lock } from "lucide-react";
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
 
-  const loginForm = useForm({
+  const loginForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
+    defaultValues: {
+      username: "",
+      password: ""
+    }
   });
 
-  const registerForm = useForm({
+  const registerForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
+    defaultValues: {
+      username: "",
+      password: ""
+    }
   });
 
   if (user) {
@@ -41,14 +49,16 @@ export default function AuthPage() {
               </TabsList>
 
               <TabsContent value="login">
-                <Form
-                  form={loginForm}
-                  onSubmit={(data) => loginMutation.mutate(data)}
-                >
+                <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))}>
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="username">Username</Label>
                       <Input id="username" {...loginForm.register("username")} />
+                      {loginForm.formState.errors.username && (
+                        <p className="text-sm text-red-500">
+                          {loginForm.formState.errors.username.message}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="password">Password</Label>
@@ -57,6 +67,11 @@ export default function AuthPage() {
                         type="password"
                         {...loginForm.register("password")}
                       />
+                      {loginForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">
+                          {loginForm.formState.errors.password.message}
+                        </p>
+                      )}
                     </div>
                     <Button
                       type="submit"
@@ -66,14 +81,11 @@ export default function AuthPage() {
                       Login
                     </Button>
                   </div>
-                </Form>
+                </form>
               </TabsContent>
 
               <TabsContent value="register">
-                <Form
-                  form={registerForm}
-                  onSubmit={(data) => registerMutation.mutate(data)}
-                >
+                <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))}>
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="reg-username">Username</Label>
@@ -81,6 +93,11 @@ export default function AuthPage() {
                         id="reg-username"
                         {...registerForm.register("username")}
                       />
+                      {registerForm.formState.errors.username && (
+                        <p className="text-sm text-red-500">
+                          {registerForm.formState.errors.username.message}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="reg-password">Password</Label>
@@ -89,6 +106,11 @@ export default function AuthPage() {
                         type="password"
                         {...registerForm.register("password")}
                       />
+                      {registerForm.formState.errors.password && (
+                        <p className="text-sm text-red-500">
+                          {registerForm.formState.errors.password.message}
+                        </p>
+                      )}
                     </div>
                     <Button
                       type="submit"
@@ -98,7 +120,7 @@ export default function AuthPage() {
                       Register
                     </Button>
                   </div>
-                </Form>
+                </form>
               </TabsContent>
             </Tabs>
           </CardContent>
