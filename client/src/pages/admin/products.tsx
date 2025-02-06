@@ -17,8 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, Product } from "@shared/schema";
@@ -26,16 +27,28 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Products() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  const createForm = useForm({
+  const form = useForm({
     resolver: zodResolver(insertProductSchema),
+    defaultValues: selectedProduct || {
+      name: "",
+      description: "",
+      price: 0,
+      imageUrl: "",
+      stock: 0,
+    },
   });
 
   const createMutation = useMutation({
@@ -49,6 +62,24 @@ export default function Products() {
         title: "Success",
         description: "Product created successfully",
       });
+      form.reset();
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await apiRequest("PUT", `/api/products/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Success",
+        description: "Product updated successfully",
+      });
+      setSelectedProduct(null);
+      setIsEditMode(false);
+      form.reset();
     },
   });
 
@@ -62,6 +93,7 @@ export default function Products() {
         title: "Success",
         description: "Product deleted successfully",
       });
+      setDeleteConfirmOpen(false);
     },
   });
 
@@ -77,10 +109,24 @@ export default function Products() {
     );
   }
 
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditMode(true);
+    form.reset(product);
+  };
+
+  const handleSubmit = (data: any) => {
+    if (isEditMode && selectedProduct) {
+      updateMutation.mutate({ id: selectedProduct.id, data });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <MainNav />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Products</h1>
@@ -93,23 +139,31 @@ export default function Products() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Product</DialogTitle>
+                <DialogTitle>
+                  {isEditMode ? "Edit Product" : "Add New Product"}
+                </DialogTitle>
               </DialogHeader>
-              <Form
-                form={createForm}
-                onSubmit={(data) => createMutation.mutate(data)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                 <div>
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" {...createForm.register("name")} />
+                  <Input id="name" {...form.register("name")} />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="description">Description</Label>
                   <Input
                     id="description"
-                    {...createForm.register("description")}
+                    {...form.register("description")}
                   />
+                  {form.formState.errors.description && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.description.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="price">Price</Label>
@@ -117,32 +171,47 @@ export default function Products() {
                     id="price"
                     type="number"
                     step="0.01"
-                    {...createForm.register("price", { valueAsNumber: true })}
+                    {...form.register("price", { valueAsNumber: true })}
                   />
+                  {form.formState.errors.price && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.price.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input id="imageUrl" {...createForm.register("imageUrl")} />
+                  <Input id="imageUrl" {...form.register("imageUrl")} />
+                  {form.formState.errors.imageUrl && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.imageUrl.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="stock">Stock</Label>
                   <Input
                     id="stock"
                     type="number"
-                    {...createForm.register("stock", { valueAsNumber: true })}
+                    {...form.register("stock", { valueAsNumber: true })}
                   />
+                  {form.formState.errors.stock && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.stock.message}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={createMutation.isPending}
+                  disabled={createMutation.isPending || updateMutation.isPending}
                 >
-                  {createMutation.isPending && (
+                  {(createMutation.isPending || updateMutation.isPending) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Create Product
+                  {isEditMode ? "Update Product" : "Create Product"}
                 </Button>
-              </Form>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
@@ -150,6 +219,7 @@ export default function Products() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
@@ -159,19 +229,63 @@ export default function Products() {
           <TableBody>
             {products?.map((product) => (
               <TableRow key={product.id}>
+                <TableCell>
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="h-10 w-10 object-cover rounded"
+                  />
+                </TableCell>
                 <TableCell>{product.name}</TableCell>
                 <TableCell>${Number(product.price).toFixed(2)}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
-                      variant="destructive"
+                      variant="outline"
                       size="sm"
-                      onClick={() => deleteMutation.mutate(product.id)}
-                      disabled={deleteMutation.isPending}
+                      onClick={() => handleEdit(product)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </Button>
+                    <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setSelectedProduct(product)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Confirm Deletion</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to delete {selectedProduct?.name}? This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => setDeleteConfirmOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={() => deleteMutation.mutate(selectedProduct!.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            {deleteMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Delete"
+                            )}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </TableCell>
               </TableRow>

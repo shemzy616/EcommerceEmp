@@ -3,13 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Redirect } from "wouter";
-import { Store, Lock } from "lucide-react";
+import { Store, Lock, ShieldCheck } from "lucide-react";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -31,6 +30,10 @@ export default function AuthPage() {
   });
 
   if (user) {
+    // Redirect admin users to the admin dashboard
+    if (user.isAdmin) {
+      return <Redirect to="/admin" />;
+    }
     return <Redirect to="/" />;
   }
 
@@ -53,7 +56,11 @@ export default function AuthPage() {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="username">Username</Label>
-                      <Input id="username" {...loginForm.register("username")} />
+                      <Input 
+                        id="username" 
+                        {...loginForm.register("username")}
+                        placeholder="Enter your username"
+                      />
                       {loginForm.formState.errors.username && (
                         <p className="text-sm text-red-500">
                           {loginForm.formState.errors.username.message}
@@ -65,6 +72,7 @@ export default function AuthPage() {
                       <Input
                         id="password"
                         type="password"
+                        placeholder="Enter your password"
                         {...loginForm.register("password")}
                       />
                       {loginForm.formState.errors.password && (
@@ -78,7 +86,14 @@ export default function AuthPage() {
                       className="w-full"
                       disabled={loginMutation.isPending}
                     >
-                      Login
+                      {loginMutation.isPending ? (
+                        "Logging in..."
+                      ) : (
+                        <>
+                          <Lock className="mr-2 h-4 w-4" />
+                          Login
+                        </>
+                      )}
                     </Button>
                   </div>
                 </form>
@@ -91,6 +106,7 @@ export default function AuthPage() {
                       <Label htmlFor="reg-username">Username</Label>
                       <Input
                         id="reg-username"
+                        placeholder="Choose a username"
                         {...registerForm.register("username")}
                       />
                       {registerForm.formState.errors.username && (
@@ -104,6 +120,7 @@ export default function AuthPage() {
                       <Input
                         id="reg-password"
                         type="password"
+                        placeholder="Choose a password"
                         {...registerForm.register("password")}
                       />
                       {registerForm.formState.errors.password && (
@@ -117,7 +134,14 @@ export default function AuthPage() {
                       className="w-full"
                       disabled={registerMutation.isPending}
                     >
-                      Register
+                      {registerMutation.isPending ? (
+                        "Creating account..."
+                      ) : (
+                        <>
+                          <ShieldCheck className="mr-2 h-4 w-4" />
+                          Register
+                        </>
+                      )}
                     </Button>
                   </div>
                 </form>
