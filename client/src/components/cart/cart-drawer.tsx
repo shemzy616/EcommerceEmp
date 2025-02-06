@@ -9,13 +9,37 @@ import {
 } from "@/components/ui/sheet";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function CartDrawer({ children }: { children: React.ReactNode }) {
   const { items, removeItem, updateQuantity, total } = useCart();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  useEffect(() => {
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 300);
+    return () => clearTimeout(timer);
+  }, [itemCount]);
 
   return (
     <Sheet>
-      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetTrigger asChild>
+        <div className="relative">
+          {children}
+          {itemCount > 0 && (
+            <span 
+              className={cn(
+                "absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center",
+                isAnimating && "animate-bounce"
+              )}
+            >
+              {itemCount}
+            </span>
+          )}
+        </div>
+      </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>Shopping Cart</SheetTitle>
