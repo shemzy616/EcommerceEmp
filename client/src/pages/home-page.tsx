@@ -3,12 +3,13 @@ import { ProductGrid } from "@/components/products/product-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingBag, Star } from "lucide-react";
+import { TestimonialSection } from "@/components/testimonials/testimonial-section"; // Import the TestimonialSection component
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <MainNav />
-      
+
       {/* Promotional Banner */}
       <div className="bg-secondary/10">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -52,7 +53,7 @@ export default function HomePage() {
               <Badge variant="secondary">Best Sellers</Badge>
             </div>
           </div>
-          
+
           {/* Promotional Deals */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             <div className="bg-secondary/10 rounded-lg p-6 flex items-center justify-between">
@@ -82,6 +83,8 @@ export default function HomePage() {
           <ProductGrid />
         </div>
       </section>
+
+      <TestimonialSection /> {/* Added TestimonialSection */}
 
       {/* Footer */}
       <footer className="mt-auto border-t py-8">
