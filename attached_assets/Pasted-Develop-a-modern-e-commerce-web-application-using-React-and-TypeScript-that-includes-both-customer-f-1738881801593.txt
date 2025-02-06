@@ -1,0 +1,145 @@
+Develop a modern e-commerce web application using React and TypeScript that includes both customer-facing and admin interfaces. The application should demonstrate proficiency in component architecture, state management, and React best practices.
+Core Technical Stack
+
+React with TypeScript
+Global State Management (React Context or Zustand)
+REST API Integration
+Version Control (Git/GitHub)
+
+Key Features and Requirements
+1. Public Interface
+Navigation & Header
+
+Implement responsive navigation bar
+
+Company logo/branding
+Navigation menu items
+Interactive cart icon with counter and animation
+Cart state management
+
+
+
+Landing Page
+
+Hero/promotional banner section
+
+Featured products display
+Current offers/deals showcase
+
+
+Product catalog
+
+Grid/list view toggle
+Filtering and sorting capabilities
+Pagination or infinite scroll
+
+
+Customer testimonials section
+
+Review display
+Rating system implementation
+
+
+Footer
+
+Company information
+Contact details
+Social media integration
+
+
+
+Product Features
+
+Product card component
+
+Image display
+Product details (name, price, description)
+Add to cart functionality
+Click through to product details
+
+
+Shopping cart functionality
+
+Add/remove items
+Quantity adjustment
+Cart total calculation
+Visual feedback on cart updates
+
+
+
+2. Admin Interface
+Authentication
+
+Secure login system
+
+Email/username and password fields
+Form validation
+Error handling
+Protected routes
+Authentication state management
+
+
+
+Dashboard
+
+Analytics display
+
+Sales performance visualization
+Product comparison charts
+Inventory tracking
+
+
+Product management
+
+CRUD operations interface
+Product listing view
+Edit/update functionality
+Delete with confirmation
+New product creation form
+
+
+
+Technical Implementation Requirements
+API Integration
+
+Implement RESTful API patterns
+Use mock API (Faker API or JSON Placeholder) for development
+Handle loading states
+Implement error boundaries
+Include proper error handling
+Add form validation
+
+State Management
+
+Implement global state management
+Handle local component state appropriately
+Manage authentication state
+Handle cart state and persistence
+
+Component Architecture
+
+Create reusable components
+Implement proper component hierarchy
+Use TypeScript for type safety
+Follow React best practices
+
+Testing and Error Handling
+
+Implement error boundaries
+Add loading states
+Include form validation
+Handle edge cases
+
+Documentation and Setup
+
+Create comprehensive README including:
+
+Project overview
+Setup instructions
+Dependencies list
+Running instructions
+Project structure
+
+
+Maintain clean commit history
+Document key components and functions
