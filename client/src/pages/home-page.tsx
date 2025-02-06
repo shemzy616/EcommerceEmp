@@ -1,7 +1,8 @@
 import { MainNav } from "@/components/layout/main-nav";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingBag, Star } from "lucide-react";
 
 export default function HomePage() {
   return (
