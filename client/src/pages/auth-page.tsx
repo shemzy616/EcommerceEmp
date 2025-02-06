@@ -8,13 +8,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Redirect } from "wouter";
-import { Store, Lock, ShieldCheck } from "lucide-react";
+import { Store, Lock, ShieldCheck, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const loginValidationSchema = insertUserSchema.extend({
+  username: insertUserSchema.shape.username.min(3, "Username must be at least 3 characters"),
+  password: insertUserSchema.shape.password.min(6, "Password must be at least 6 characters"),
+});
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
 
   const loginForm = useForm<InsertUser>({
-    resolver: zodResolver(insertUserSchema),
+    resolver: zodResolver(loginValidationSchema),
     defaultValues: {
       username: "",
       password: ""
@@ -22,7 +28,7 @@ export default function AuthPage() {
   });
 
   const registerForm = useForm<InsertUser>({
-    resolver: zodResolver(insertUserSchema),
+    resolver: zodResolver(loginValidationSchema),
     defaultValues: {
       username: "",
       password: ""
@@ -42,7 +48,7 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Welcome to EShop</CardTitle>
+            <CardTitle className="text-2xl font-bold">Admin Authentication</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
@@ -52,98 +58,132 @@ export default function AuthPage() {
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))}>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="username">Username</Label>
-                      <Input 
-                        id="username" 
-                        {...loginForm.register("username")}
-                        placeholder="Enter your username"
-                      />
-                      {loginForm.formState.errors.username && (
-                        <p className="text-sm text-red-500">
-                          {loginForm.formState.errors.username.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        {...loginForm.register("password")}
-                      />
-                      {loginForm.formState.errors.password && (
-                        <p className="text-sm text-red-500">
-                          {loginForm.formState.errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full"
+                <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))} 
+                      className="space-y-4">
+                  {loginMutation.isError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Invalid username or password. Please try again.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input 
+                      id="username" 
+                      {...loginForm.register("username")}
+                      placeholder="Enter your username"
+                      className={loginForm.formState.errors.username ? "border-destructive" : ""}
                       disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? (
-                        "Logging in..."
-                      ) : (
-                        <>
-                          <Lock className="mr-2 h-4 w-4" />
-                          Login
-                        </>
-                      )}
-                    </Button>
+                    />
+                    {loginForm.formState.errors.username && (
+                      <p className="text-sm text-destructive">
+                        {loginForm.formState.errors.username.message}
+                      </p>
+                    )}
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      {...loginForm.register("password")}
+                      className={loginForm.formState.errors.password ? "border-destructive" : ""}
+                      disabled={loginMutation.isPending}
+                    />
+                    {loginForm.formState.errors.password && (
+                      <p className="text-sm text-destructive">
+                        {loginForm.formState.errors.password.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? (
+                      <>
+                        <Lock className="mr-2 h-4 w-4 animate-spin" />
+                        Authenticating...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="mr-2 h-4 w-4" />
+                        Login
+                      </>
+                    )}
+                  </Button>
                 </form>
               </TabsContent>
 
               <TabsContent value="register">
-                <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))}>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="reg-username">Username</Label>
-                      <Input
-                        id="reg-username"
-                        placeholder="Choose a username"
-                        {...registerForm.register("username")}
-                      />
-                      {registerForm.formState.errors.username && (
-                        <p className="text-sm text-red-500">
-                          {registerForm.formState.errors.username.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="reg-password">Password</Label>
-                      <Input
-                        id="reg-password"
-                        type="password"
-                        placeholder="Choose a password"
-                        {...registerForm.register("password")}
-                      />
-                      {registerForm.formState.errors.password && (
-                        <p className="text-sm text-red-500">
-                          {registerForm.formState.errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full"
+                <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))}
+                      className="space-y-4">
+                  {registerMutation.isError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Registration failed. Please try a different username.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-username">Username</Label>
+                    <Input
+                      id="reg-username"
+                      placeholder="Choose a username"
+                      {...registerForm.register("username")}
+                      className={registerForm.formState.errors.username ? "border-destructive" : ""}
                       disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending ? (
-                        "Creating account..."
-                      ) : (
-                        <>
-                          <ShieldCheck className="mr-2 h-4 w-4" />
-                          Register
-                        </>
-                      )}
-                    </Button>
+                    />
+                    {registerForm.formState.errors.username && (
+                      <p className="text-sm text-destructive">
+                        {registerForm.formState.errors.username.message}
+                      </p>
+                    )}
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-password">Password</Label>
+                    <Input
+                      id="reg-password"
+                      type="password"
+                      placeholder="Choose a password"
+                      {...registerForm.register("password")}
+                      className={registerForm.formState.errors.password ? "border-destructive" : ""}
+                      disabled={registerMutation.isPending}
+                    />
+                    {registerForm.formState.errors.password && (
+                      <p className="text-sm text-destructive">
+                        {registerForm.formState.errors.password.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={registerMutation.isPending}
+                  >
+                    {registerMutation.isPending ? (
+                      <>
+                        <ShieldCheck className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        Register
+                      </>
+                    )}
+                  </Button>
                 </form>
               </TabsContent>
             </Tabs>
@@ -155,15 +195,15 @@ export default function AuthPage() {
         <div className="max-w-lg text-primary-foreground">
           <div className="flex items-center gap-2 mb-8">
             <Store className="h-12 w-12" />
-            <h1 className="text-4xl font-bold">EShop Platform</h1>
+            <h1 className="text-4xl font-bold">Admin Portal</h1>
           </div>
           <p className="text-xl mb-4">
-            Your one-stop destination for quality products and seamless shopping
-            experience.
+            Secure administrative access for managing products, monitoring sales, and
+            maintaining the e-commerce platform.
           </p>
           <div className="flex items-center gap-2 text-lg">
             <Lock className="h-5 w-5" />
-            <span>Secure authentication & verified sellers</span>
+            <span>Enhanced security measures for admin access</span>
           </div>
         </div>
       </div>
