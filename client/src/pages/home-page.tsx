@@ -4,8 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingBag, Star } from "lucide-react";
 import { TestimonialSection } from "@/components/testimonials/testimonial-section"; // Import the TestimonialSection component
+import { Alert, AlertDescription } from "@/components/ui/alert"; // Added import
+import { ErrorBoundary } from "@/components/ui/error-boundary"; // Added import
+
 
 export default function HomePage() {
+  // Assuming 'products' is fetched from API and available in context or props
+  const products = []; // Placeholder - replace with actual data fetching
+
   return (
     <div className="min-h-screen flex flex-col">
       <MainNav />
@@ -43,44 +49,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Products Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Featured Products</h2>
-            <div className="flex items-center gap-4">
-              <Badge variant="secondary">Hot Deals</Badge>
-              <Badge variant="secondary">Best Sellers</Badge>
-            </div>
+            <h2 className="text-3xl font-bold">Our Products</h2>
+            <Badge variant="outline" className="px-4">
+              {products?.length || 0} Products
+            </Badge>
           </div>
-
-          {/* Promotional Deals */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div className="bg-secondary/10 rounded-lg p-6 flex items-center justify-between">
-              <div>
-                <Badge variant="destructive" className="mb-2">Limited Time</Badge>
-                <h3 className="text-2xl font-bold mb-2">Summer Sale</h3>
-                <p className="text-muted-foreground mb-4">Up to 40% off on selected items</p>
-                <Button>View Deals</Button>
-              </div>
-              <div className="hidden md:block">
-                <ShoppingBag className="h-16 w-16 text-primary" />
-              </div>
-            </div>
-            <div className="bg-primary/10 rounded-lg p-6 flex items-center justify-between">
-              <div>
-                <Badge className="mb-2">New Arrival</Badge>
-                <h3 className="text-2xl font-bold mb-2">Premium Collection</h3>
-                <p className="text-muted-foreground mb-4">Discover our latest products</p>
-                <Button variant="secondary">Explore</Button>
-              </div>
-              <div className="hidden md:block">
-                <Star className="h-16 w-16 text-primary" />
-              </div>
-            </div>
-          </div>
-
-          <ProductGrid />
+          <ErrorBoundary FallbackComponent={({ error }) => (
+            <Alert variant="destructive">
+              <AlertDescription>
+                {error.message}
+              </AlertDescription>
+            </Alert>
+          )}>
+            <ProductGrid />
+          </ErrorBoundary>
         </div>
       </section>
 

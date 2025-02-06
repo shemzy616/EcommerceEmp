@@ -5,14 +5,40 @@ import { Product } from "@shared/schema";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { ProductFilters } from "./product-filters";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <Alert variant="destructive">
+      <AlertDescription>
+        Error loading products: {error.message}
+      </AlertDescription>
+    </Alert>
+  );
+}
 
 export function ProductGrid() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("name-asc");
 
-  const { data: products, isLoading } = useQuery<Product[]>({
+  const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    retry: 2,
   });
+
+  if (error) {
+    return <ErrorFallback error={error as Error} />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading products...</span>
+      </div>
+    );
+  }
 
   const sortedProducts = [...(products || [])].sort((a, b) => {
     switch (sortBy) {
@@ -29,22 +55,6 @@ export function ProductGrid() {
     }
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!products?.length) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">No products available</p>
-      </div>
-    );
-  }
-
   return (
     <div>
       <ProductFilters
@@ -53,17 +63,19 @@ export function ProductGrid() {
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
-      <div
-        className={
-          view === "grid"
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            : "flex flex-col gap-4"
-        }
-      >
-        {sortedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} view={view} />
-        ))}
-      </div>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <div
+          className={
+            view === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "flex flex-col gap-4"
+          }
+        >
+          {sortedProducts.map((product) => (
+            <ProductCard key={product.id} product={product} view={view} />
+          ))}
+        </div>
+      </ErrorBoundary>
     </div>
   );
 }
