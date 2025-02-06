@@ -1,7 +1,7 @@
 import { MainNav } from "@/components/layout/main-nav";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../components/ui/badge";
 import { ShoppingBag, Star } from "lucide-react";
 import { TestimonialSection } from "@/components/testimonials/testimonial-section"; // Import the TestimonialSection component
 import { Alert, AlertDescription } from "@/components/ui/alert"; // Added import
