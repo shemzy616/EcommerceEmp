@@ -45,7 +45,7 @@ export default function Products() {
     defaultValues: selectedProduct || {
       name: "",
       description: "",
-      price: 0,
+      price: "",
       imageUrl: "",
       stock: 0,
     },
@@ -53,7 +53,12 @@ export default function Products() {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/products", data);
+      // Convert price to string before sending to API
+      const formattedData = {
+        ...data,
+        price: data.price.toString()
+      };
+      const res = await apiRequest("POST", "/api/products", formattedData);
       return res.json();
     },
     onSuccess: () => {
@@ -68,7 +73,12 @@ export default function Products() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const res = await apiRequest("PUT", `/api/products/${id}`, data);
+      // Convert price to string before sending to API
+      const formattedData = {
+        ...data,
+        price: data.price.toString()
+      };
+      const res = await apiRequest("PUT", `/api/products/${id}`, formattedData);
       return res.json();
     },
     onSuccess: () => {
@@ -112,7 +122,10 @@ export default function Products() {
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
     setIsEditMode(true);
-    form.reset(product);
+    form.reset({
+      ...product,
+      price: product.price.toString()
+    });
   };
 
   const handleSubmit = (data: any) => {
@@ -148,7 +161,7 @@ export default function Products() {
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" {...form.register("name")} />
                   {form.formState.errors.name && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {form.formState.errors.name.message}
                     </p>
                   )}
@@ -160,7 +173,7 @@ export default function Products() {
                     {...form.register("description")}
                   />
                   {form.formState.errors.description && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {form.formState.errors.description.message}
                     </p>
                   )}
@@ -171,10 +184,10 @@ export default function Products() {
                     id="price"
                     type="number"
                     step="0.01"
-                    {...form.register("price", { valueAsNumber: true })}
+                    {...form.register("price")}
                   />
                   {form.formState.errors.price && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {form.formState.errors.price.message}
                     </p>
                   )}
@@ -183,7 +196,7 @@ export default function Products() {
                   <Label htmlFor="imageUrl">Image URL</Label>
                   <Input id="imageUrl" {...form.register("imageUrl")} />
                   {form.formState.errors.imageUrl && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {form.formState.errors.imageUrl.message}
                     </p>
                   )}
@@ -196,7 +209,7 @@ export default function Products() {
                     {...form.register("stock", { valueAsNumber: true })}
                   />
                   {form.formState.errors.stock && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {form.formState.errors.stock.message}
                     </p>
                   )}

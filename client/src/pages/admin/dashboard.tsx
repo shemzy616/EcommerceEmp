@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { TestimonialSection } from "@/components/testimonials/testimonial-section";
 
 // Mock data for charts
 const salesData = [
@@ -134,7 +135,7 @@ export default function Dashboard() {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Sales Overview</CardTitle>
@@ -186,6 +187,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="mb-8">
+          <TestimonialSection />
         </div>
       </div>
     </div>
