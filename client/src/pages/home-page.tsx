@@ -8,6 +8,21 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col">
       <MainNav />
       
+      {/* Promotional Banner */}
+      <div className="bg-secondary/10">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium">
+              New
+            </span>
+            <p className="text-sm">Special offer: Get 20% off on all electronics!</p>
+          </div>
+          <Button variant="link" size="sm">
+            Shop Now →
+          </Button>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container mx-auto px-4">
@@ -29,7 +44,40 @@ export default function HomePage() {
       {/* Featured Products */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">Featured Products</h2>
+            <div className="flex items-center gap-4">
+              <Badge variant="secondary">Hot Deals</Badge>
+              <Badge variant="secondary">Best Sellers</Badge>
+            </div>
+          </div>
+          
+          {/* Promotional Deals */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="bg-secondary/10 rounded-lg p-6 flex items-center justify-between">
+              <div>
+                <Badge variant="destructive" className="mb-2">Limited Time</Badge>
+                <h3 className="text-2xl font-bold mb-2">Summer Sale</h3>
+                <p className="text-muted-foreground mb-4">Up to 40% off on selected items</p>
+                <Button>View Deals</Button>
+              </div>
+              <div className="hidden md:block">
+                <ShoppingBag className="h-16 w-16 text-primary" />
+              </div>
+            </div>
+            <div className="bg-primary/10 rounded-lg p-6 flex items-center justify-between">
+              <div>
+                <Badge className="mb-2">New Arrival</Badge>
+                <h3 className="text-2xl font-bold mb-2">Premium Collection</h3>
+                <p className="text-muted-foreground mb-4">Discover our latest products</p>
+                <Button variant="secondary">Explore</Button>
+              </div>
+              <div className="hidden md:block">
+                <Star className="h-16 w-16 text-primary" />
+              </div>
+            </div>
+          </div>
+
           <ProductGrid />
         </div>
       </section>
