@@ -16,6 +16,25 @@ export function MainNav() {
             <span>EShop</span>
           </a>
         </Link>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <Button variant="ghost" onClick={() => logoutMutation.mutate()}>
+                Logout
+              </Button>
+              {user.isAdmin && (
+                <Link href="/admin">
+                  <Button>Admin Dashboard</Button>
+                </Link>
+              )}
+            </>
+          ) : (
+            <Link href="/auth">
+              <Button>Login / Register</Button>
+            </Link>
+          )}
+          <CartDrawer />
+        </div>
 
         <div className="flex items-center gap-4">
           {user ? (
