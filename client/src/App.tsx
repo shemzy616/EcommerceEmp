@@ -10,6 +10,7 @@ import Products from "@/pages/admin/products";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider } from "@/hooks/use-cart";
 import { ProtectedRoute } from "./lib/protected-route";
+import ProductDetail from "@/pages/product-detail";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/admin" component={Dashboard} />
       <ProtectedRoute path="/admin/products" component={Products} />
+      <Route path="/product/:id" component={ProductDetail} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -58,7 +58,8 @@ export function ProductCard({ product, view }: ProductCardProps) {
   }
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col group cursor-pointer">
+      <a href={`/product/${product.id}`} className="flex-grow">
       <div className="aspect-square relative">
         <img
           src={product.imageUrl}
@@ -80,6 +81,7 @@ export function ProductCard({ product, view }: ProductCardProps) {
           {product.stock} in stock
         </div>
       </CardContent>
+      </a>
       <CardFooter>
         <Button
           className="w-full"
