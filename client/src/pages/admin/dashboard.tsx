@@ -39,9 +39,15 @@ const productPerformance = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { data: products, isLoading } = useQuery<Product[]>({
+  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const { data: promotions, isLoading: promotionsLoading } = useQuery<Promotion[]>({
+    queryKey: ["/api/promotions"],
+  });
+
+  const isLoading = productsLoading || promotionsLoading;
 
   if (!user?.isAdmin) {
     return <div>Access denied</div>;
