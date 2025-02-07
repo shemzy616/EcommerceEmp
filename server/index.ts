@@ -48,6 +48,9 @@ app.use((req, res, next) => {
   const server = registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    if (res.headersSent) {
+      return _next(err);
+    }
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
     

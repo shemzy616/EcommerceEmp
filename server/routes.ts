@@ -9,12 +9,15 @@ export function registerRoutes(app: Express): Server {
   setupAuth(app);
 
   // Products API
-  app.get("/api/products", async (_req, res) => {
+  app.get("/api/products", async (_req, res, next) => {
     try {
       const products = await storage.getAllProducts();
+      if (!products) {
+        return res.status(404).json({ message: "No products found" });
+      }
       res.json(products);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch products" });
+      next(error);
     }
   });
 

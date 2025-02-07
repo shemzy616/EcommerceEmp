@@ -27,6 +27,11 @@ export function ProductGrid() {
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     retry: 2,
+    refetchOnWindowFocus: false,
+    staleTime: 30000,
+    onError: (error) => {
+      console.error("Product fetch error:", error);
+    }
   });
 
   // Added query for promotions. Replace Promotion[] with your actual type if different.
