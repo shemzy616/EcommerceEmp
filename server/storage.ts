@@ -27,6 +27,61 @@ export class DatabaseStorage implements IStorage {
       pool,
       createTableIfMissing: true,
     });
+    this.seedProducts();
+  }
+
+  private async seedProducts() {
+    const existingProducts = await this.getAllProducts();
+    if (existingProducts.length === 0) {
+      const mockProducts = [
+        {
+          name: "Premium Wireless Headphones",
+          description: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
+          price: "299.99",
+          imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
+          stock: 50
+        },
+        {
+          name: "Smart Fitness Watch",
+          description: "Track your health and fitness with this advanced smartwatch featuring heart rate monitoring and GPS.",
+          price: "199.99",
+          imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+          stock: 75
+        },
+        {
+          name: "Ultra HD 4K Camera",
+          description: "Professional-grade camera with 4K video recording and advanced image stabilization.",
+          price: "899.99",
+          imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500",
+          stock: 25
+        },
+        {
+          name: "Designer Laptop Backpack",
+          description: "Stylish and durable backpack with padded laptop compartment and multiple storage pockets.",
+          price: "79.99",
+          imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500",
+          stock: 100
+        },
+        {
+          name: "Portable Bluetooth Speaker",
+          description: "Waterproof speaker with stunning 360-degree sound and 20-hour playtime.",
+          price: "129.99",
+          imageUrl: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500",
+          stock: 60
+        },
+        {
+          name: "Mechanical Gaming Keyboard",
+          description: "RGB backlit mechanical keyboard with customizable keys and premium switches.",
+          price: "159.99",
+          imageUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
+          stock: 45
+        }
+      ];
+
+      for (const product of mockProducts) {
+        await this.createProduct(product);
+      }
+    }
   }
 
   async getUser(id: number): Promise<User | undefined> {
