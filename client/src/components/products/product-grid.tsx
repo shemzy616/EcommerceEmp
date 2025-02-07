@@ -1,4 +1,3 @@
-
 import { ProductCard } from "./product-card";
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
@@ -7,6 +6,9 @@ import { useState } from "react";
 import { ProductFilters } from "./product-filters";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ErrorBoundary } from "react-error-boundary";
+// Added import for Promotion type.  Replace with your actual import path.
+import { Promotion } from "@shared/schema";
+
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -27,15 +29,26 @@ export function ProductGrid() {
     retry: 2,
   });
 
-  if (error) {
-    return <ErrorFallback error={error as Error} />;
+  // Added query for promotions. Replace Promotion[] with your actual type if different.
+  const { data: promotions, isLoading: promotionsLoading, error: promotionsError } = useQuery<Promotion[]>({
+    queryKey: ["/api/promotions"],
+    retry: 2,
+  });
+
+  const getProductPromotion = (productId: number) => {
+    return promotions?.find(promo => promo.productId === productId);
+  };
+
+
+  if (error || promotionsError) {
+    return <ErrorFallback error={error || promotionsError as Error} />;
   }
 
-  if (isLoading) {
+  if (isLoading || promotionsLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading products...</span>
+        <span className="ml-2">Loading products and promotions...</span>
       </div>
     );
   }
@@ -57,6 +70,14 @@ export function ProductGrid() {
 
   return (
     <div>
+      {/* Placeholder for promotional banner section */}
+      <div className="bg-gray-100 p-4 mb-4">
+        <h2 className="text-xl font-bold mb-2">Promotional Banner</h2>
+        {/*  Implementation for featured product highlights and current offers/deals would go here.
+             This section needs backend support and more detailed UI design.  */}
+        <p>Featured Products:  (Implementation needed)</p>
+        <p>Current Offers: (Implementation needed)</p>
+      </div>
       <ProductFilters
         view={view}
         setView={setView}
@@ -72,7 +93,7 @@ export function ProductGrid() {
           }
         >
           {sortedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} view={view} />
+            <ProductCard key={product.id} product={product} view={view} promotion={getProductPromotion(product.id)} />
           ))}
         </div>
       </ErrorBoundary>

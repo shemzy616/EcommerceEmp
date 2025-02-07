@@ -135,7 +135,32 @@ export default function Dashboard() {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="mb-8">
+  <Card>
+    <CardHeader>
+      <CardTitle>Active Promotions</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {promotions?.map((promotion) => (
+          <div key={promotion.id} className="flex items-center justify-between p-4 border rounded">
+            <div>
+              <h3 className="font-semibold">{promotion.title}</h3>
+              <p className="text-sm text-muted-foreground">{promotion.description}</p>
+              <p className="text-sm">Discount: {promotion.discount}%</p>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <p>Starts: {new Date(promotion.startDate).toLocaleDateString()}</p>
+              <p>Ends: {new Date(promotion.endDate).toLocaleDateString()}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Sales Overview</CardTitle>

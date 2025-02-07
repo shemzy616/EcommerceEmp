@@ -51,6 +51,20 @@ export function registerRoutes(app: Express): Server {
       return res.sendStatus(403);
     }
 
+  // Promotions API
+  app.get("/api/promotions", async (_req, res) => {
+    const promotions = await storage.getActivePromotions();
+    res.json(promotions);
+  });
+
+  app.post("/api/promotions", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user.isAdmin) {
+      return res.sendStatus(403);
+    }
+    const promotion = await storage.createPromotion(req.body);
+    res.status(201).json(promotion);
+  });
+
     const id = parseInt(req.params.id);
     await storage.deleteProduct(id);
     res.sendStatus(204);

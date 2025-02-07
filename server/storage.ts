@@ -165,6 +165,27 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
+  async getActivePromotions(): Promise<Promotion[]> {
+    try {
+      return await db.select()
+        .from(promotions)
+        .where(eq(promotions.isActive, true));
+    } catch (error) {
+      console.error('Error getting promotions:', error);
+      throw error;
+    }
+  }
+
+  async createPromotion(insertPromotion: InsertPromotion): Promise<Promotion> {
+    try {
+      const [promotion] = await db.insert(promotions).values(insertPromotion).returning();
+      return promotion;
+    } catch (error) {
+      console.error('Error creating promotion:', error);
+      throw error;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
