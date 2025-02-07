@@ -10,8 +10,12 @@ export function registerRoutes(app: Express): Server {
 
   // Products API
   app.get("/api/products", async (_req, res) => {
-    const products = await storage.getAllProducts();
-    res.json(products);
+    try {
+      const products = await storage.getAllProducts();
+      res.json(products);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
   });
 
   app.post("/api/products", async (req, res) => {
