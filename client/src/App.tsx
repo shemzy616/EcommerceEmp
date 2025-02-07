@@ -19,6 +19,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/admin" component={Dashboard} />
       <ProtectedRoute path="/admin/products" component={Products} />
+      <Route path="/products" component={ProductsPage} />
       <Route path="/product/:id" component={ProductDetail} />
       <Route component={NotFound} />
     </Switch>

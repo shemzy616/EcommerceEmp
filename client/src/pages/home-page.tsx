@@ -6,6 +6,7 @@ import { ShoppingBag, Star } from "lucide-react";
 import { TestimonialSection } from "@/components/testimonials/testimonial-section"; // Import the TestimonialSection component
 import { Alert, AlertDescription } from "@/components/ui/alert"; // Added import
 import { ErrorBoundary } from "@/components/ui/error-boundary"; // Added import
+import Link from "next/link"; // Import Link component
 
 
 export default function HomePage() {
@@ -25,8 +26,8 @@ export default function HomePage() {
             </span>
             <p className="text-sm">Special offer: Get 20% off on all electronics!</p>
           </div>
-          <Button variant="link" size="sm">
-            Shop Now →
+          <Button asChild variant="link" size="sm">
+            <Link href="/products">Shop Now →</Link>
           </Button>
         </div>
       </div>
@@ -41,9 +42,11 @@ export default function HomePage() {
             <p className="text-xl mb-8">
               Discover our curated collection of quality products at amazing prices.
             </p>
-            <Button size="lg" variant="secondary">
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              Shop Now
+            <Button size="lg" variant="secondary" asChild>
+              <Link href="/products">
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Shop Now
+              </Link>
             </Button>
           </div>
         </div>
