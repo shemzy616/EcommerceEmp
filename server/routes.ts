@@ -22,6 +22,27 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Promotions API
+  app.get("/api/promotions", async (_req, res) => {
+    try {
+      // Temporary mock data until database integration
+      const promotions = [
+        {
+          id: 1,
+          productId: 1,
+          description: "Summer Sale",
+          discountPercentage: 20,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        }
+      ];
+      res.json(promotions);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+      res.status(500).json({ message: "Failed to fetch promotions" });
+    }
+  });
+
   app.post("/api/products", async (req, res) => {
     if (!req.isAuthenticated() || !req.user.isAdmin) {
       return res.sendStatus(403);

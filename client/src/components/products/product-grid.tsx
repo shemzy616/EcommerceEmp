@@ -49,7 +49,20 @@ export function ProductGrid() {
   // Added query for promotions. Replace Promotion[] with your actual type if different.
   const { data: promotions, isLoading: promotionsLoading, error: promotionsError } = useQuery<Promotion[]>({
     queryKey: ["/api/promotions"],
-    retry: 2,
+    queryFn: async () => {
+      const response = await fetch("/api/promotions", {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${await response.text()}`);
+      }
+      return response.json();
+    },
+    retry: 1,
+    enabled: true,
   });
 
   const getProductPromotion = (productId: number) => {

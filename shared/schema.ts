@@ -50,8 +50,18 @@ export const promotions = pgTable("promotions", {
 });
 
 // Export types
-export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+
+export type Promotion = {
+  id: number;
+  productId: number;
+  description: string;
+  discountPercentage: number;
+  startDate: Date;
+  endDate: Date;
+};
+
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Promotion = typeof promotions.$inferSelect;
