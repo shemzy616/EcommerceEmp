@@ -11,6 +11,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider } from "@/hooks/use-cart";
 import { ProtectedRoute } from "./lib/protected-route";
 import ProductDetail from "@/pages/product-detail";
+import ProductsPage from "@/pages/products";
 
 function Router() {
   return (
