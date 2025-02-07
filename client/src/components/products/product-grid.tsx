@@ -26,11 +26,23 @@ export function ProductGrid() {
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
-    retry: 2,
+    retry: 1,
     refetchOnWindowFocus: false,
     staleTime: 30000,
     onError: (error) => {
       console.error("Product fetch error:", error);
+    },
+    queryFn: async () => {
+      const response = await fetch("/api/products", {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${await response.text()}`);
+      }
+      return response.json();
     }
   });
 
